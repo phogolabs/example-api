@@ -1,0 +1,135 @@
+openapi: "3.0.1"
+info:
+  version: 1.0.0
+  title: Swagger Bank API
+  license:
+    name: MIT
+paths:
+  /accounts:
+    get:
+      summary: List all accounts
+      operationId: getAllAccounts
+      tags:
+        - account
+      parameters:
+        - name: limit
+          in: query
+          description: How many items to return at one time (max 100)
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: A paged array of accounts
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/Account"
+        '500':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Create an account
+      operationId: createAccount
+      tags:
+        - account
+      responses:
+        '201':
+          description: Empty response
+        '500':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /accounts/{account_id}:
+    get:
+      summary: Fetch an account by id
+      operationId: getAccountByID
+      tags:
+        - account
+      parameters:
+        - name: account_id
+          in: path
+          required: true
+          description: The id of the account
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Account"
+        '404':
+          description: Not found error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '500':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      summary: Delete an account by id
+      operationId: deleteAccountByID
+      tags:
+        - account
+      parameters:
+        - name: account_id
+          in: path
+          required: true
+          description: The id of the account
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Empty response
+        '500':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  schemas:
+    Account:
+      type: object
+      required:
+        - email
+      properties:
+        id:
+          type: integer
+          format: int64
+        email:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        date_of_birth:
+          type: string
+          format: date
+    Accounts:
+      type: array
+      items:
+        $ref: "#/components/schemas/Account"
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
